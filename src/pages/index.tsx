@@ -1,7 +1,11 @@
+import Topbar from '@/components/Topbar/Topbar'
+
 export default function Home() {
 	return (
-		<main>
-			<h1>Next.js + Tailwind CSS</h1>
-		</main>
+		<>
+			<main className='bg-dark-layer-2 min-h-screen'>
+				<Topbar />
+			</main>
+		</>
 	);
 }
