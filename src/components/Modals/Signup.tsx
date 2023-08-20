@@ -4,6 +4,7 @@ import { authModalState } from '@/atoms/authModalAtom';
 import { auth } from '@/firebase/firebase';
 import { useCreateUserWithEmailAndPassword, } from 'react-firebase-hooks/auth';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 type SignupProps = {};
 
@@ -22,25 +23,36 @@ const Signup: React.FC<SignupProps> = () => {
 		useCreateUserWithEmailAndPassword(auth);
 	const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-		console.log(inputs);
 	};
 	const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-      if(!inputs.email || !inputs.displayName || !inputs.password) return alert("Please fill all the fields")
+      if(!inputs.email || !inputs.displayName || !inputs.password) return (toast.warning('Please fill all the fields', {
+			position: 'top-center',
+			autoClose: 3000,
+			theme: 'dark',
+		}))
 
       const { email, displayName, password } = inputs;
       try {
          const newUser = await createUserWithEmailAndPassword(email,password)
          if(!newUser) return;
          router.push('/')
-      } catch (error) {
-         console.log(error)
+      } catch (error:any) {
+         toast.error(error.message, {
+						position: 'top-center',
+						autoClose: 3000,
+						theme: 'dark',
+					});
       }
 	};
 
    useEffect(() => {
       if(error){
-         alert(error.message)
+         toast.error(error.message, {
+						position: 'top-center',
+						autoClose: 3000,
+						theme: 'dark',
+					});
       }
    },[error])
 

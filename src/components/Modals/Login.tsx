@@ -4,6 +4,7 @@ import { authModalState } from '@/atoms/authModalAtom';
 import { auth } from '@/firebase/firebase';
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 type LoginProps = {};
 
@@ -21,27 +22,36 @@ const Login: React.FC<LoginProps> = () => {
 			useSignInWithEmailAndPassword(auth);
 	const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-		console.log(inputs);
 	};
    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if(!inputs.email || !inputs.password) return alert("Please fill all the fields")
+      if(!inputs.email || !inputs.password) return toast.warning('Please fill all the fields', {
+				position: 'top-center',
+				autoClose: 3000,
+				theme: 'dark',
+			});
       const { email, password } = inputs;
       try {
          const user = await signInWithEmailAndPassword(email,password)
          if(!user) return;
          router.push('/')
       } catch (error:any) {
-         console.log(error.message)
+         toast.error(error.message, {
+						position: 'top-center',
+						autoClose: 3000,
+						theme: 'dark',
+					});
       }
    }
    useEffect(() => {
       if(error){
-         alert(error.message)
+         toast.error(error.message, {
+						position: 'top-center',
+						autoClose: 3000,
+						theme: 'dark',
+					});
       }
    },[error])
-
-   console.log(user)
 	return (
 		<form action='' className='space-y-6 px-6 py-4' onSubmit={handleSubmit}>
 			<h3 className='text-xl font-medium text-white'>
