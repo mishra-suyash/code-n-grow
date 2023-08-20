@@ -5,6 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import Logout from '../Buttons/Logout';
 import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModalAtom';
+import Image from 'next/image';
 
 type TopbarProps = {};
 
@@ -21,7 +22,7 @@ const Topbar: React.FC<TopbarProps> = () => {
 				className={`flex w-full items-center justify-between max-w-[1200px] mx-auto`}
 			>
 				<Link href='/' className='h-[30px] flex-1'>
-					<img src='/logo-full.png' alt='Logo' className='h-full' />
+					<Image src='/logo-full.png' alt='logo' width={150} height={50} />
 				</Link>
 
 				<div className='flex items-center space-x-4 flex-1 justify-end'>
@@ -44,12 +45,13 @@ const Topbar: React.FC<TopbarProps> = () => {
 					)}
 					{user && (
 						<div className='cursor-pointer group relative '>
-							<img
+							{/* <img
 								src={user.photoURL || '/avatar.png'}
 								alt='avatar'
 								className='h-8 w-8 rounded-full object-cover'
-							/>
-							<div className='absolute -top-2 -right-2 w-3 h-3 rounded-full bg-green-500 border-2 border-white group-hover:bg-green-500'></div>
+							/> */}
+							<Image src={user.photoURL || '/avatar.png'} alt='avatar' width={32} height={32} className='rounded-full object-cover' />	
+							<div className='absolute -top-2 -right-2 w-3 h-3 rounded-full bg-green-500 border-2 border-white group-hover:bg-green-500'>I</div>
 							<div className='absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg z-40 group-hover:scale-100 scale-0 transition-all duration-300 ease-in-out'
 							>
 								<p className='text-sm'>{user.email}</p>

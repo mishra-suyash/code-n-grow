@@ -6,6 +6,7 @@ import { authModalState } from '@/atoms/authModalAtom';
 import { auth } from '@/firebase/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 type AuthPageProps = {};
 
@@ -24,7 +25,7 @@ const AuthPage: React.FC<AuthPageProps> = () => {
 	},[user,router,loading])
 	if(pageLoading) return <div className="h-screen bg-black">
 		<div className="flex items-center justify-center h-full">
-			<img src="/logo-full.png" alt="logo" className="h-12" />
+			<Image src='/logo-full.png' alt='logo' width={150} height={50} />
 		</div>
 	</div>
 
@@ -33,7 +34,7 @@ const AuthPage: React.FC<AuthPageProps> = () => {
 			<div className='max-w-7xl mx-auto'>
 				<Navbar />
             <div className="flex items-center justify-center h-[calc(100vh-5rem)] pointer-events-none select-none">
-               <img src="/hero.png" alt="logo" className="h-full" />
+					<Image src='/hero.png' alt='logo' width={750} height={750}  />
             </div>
             {authModal.isOpen &&<AuthModal />}
 			</div>
