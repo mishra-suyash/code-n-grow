@@ -32,16 +32,24 @@ const Login: React.FC<LoginProps> = () => {
 			});
       const { email, password } = inputs;
       try {
-         const user = await signInWithEmailAndPassword(email,password)
-         if(!user) return;
-         router.push('/')
-      } catch (error:any) {
-         toast.error(error.message, {
-						position: 'top-center',
-						autoClose: 3000,
-						theme: 'dark',
-					});
-      }
+				toast.loading('Signing In...', {
+					position: 'top-center',
+					theme: 'dark',
+					toastId: 'loadingToast',
+				});
+
+				const user = await signInWithEmailAndPassword(email, password);
+				if (!user) return;
+				router.push('/');
+			} catch (error: any) {
+				toast.error(error.message, {
+					position: 'top-center',
+					autoClose: 3000,
+					theme: 'dark',
+				});
+			} finally {
+				toast.dismiss('loadingToast');
+			}
    }
    useEffect(() => {
       if(error){

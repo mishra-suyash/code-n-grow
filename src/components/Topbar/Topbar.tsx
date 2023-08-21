@@ -43,7 +43,7 @@ const Topbar: React.FC<TopbarProps> = ({problemPage}) => {
 							Premium
 						</a>
 					</div>
-					{problemPage?<Timer />:''}
+					{problemPage&&user?<Timer />:''}
 					{!user && (
 						<Link href='/auth' onClick={handleSignInClick}>
 							<button className='bg-dark-fill-3 py-1 px-2 cursor-pointer rounded '>

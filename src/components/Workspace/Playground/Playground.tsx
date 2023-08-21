@@ -5,16 +5,20 @@ import CodeMirror from '@uiw/react-codemirror';
 import {vscodeDark} from '@uiw/codemirror-theme-vscode';
 import {javascript} from '@codemirror/lang-javascript';
 import EditorFooter from './EditorFooter/EditorFooter';
+import { Problem } from '@/utils/types/problem';
 
 
 type PlaygroundProps = {
-   
+   problem:Problem
 };
 
-const Playground:React.FC<PlaygroundProps> = () => {
-   
+const Playground:React.FC<PlaygroundProps> = ({problem}) => {
+	const [activeTestCase, setActiveTestCase] = React.useState<number>(0);
+   const boilerPlateCode = problem.starterCode;
+
+
    return (
-			<div className='flex flex-col bg-dark-layer-1 relative'>
+			<div className='flex flex-col bg-dark-layer-1 relative overflow-x-hidden'>
 				<PreferenceNavbar />
 				<Split
 					className='h-[calc(100vh-94px)]'
@@ -24,7 +28,7 @@ const Playground:React.FC<PlaygroundProps> = () => {
 				>
 					<div className='w-full overflow-auto'>
 						<CodeMirror
-							value='const a = 1;'
+							value={boilerPlateCode}
 							theme={vscodeDark}
 							extensions={[javascript()]}
 							style={{ fontSize: 16 }}
@@ -41,43 +45,41 @@ const Playground:React.FC<PlaygroundProps> = () => {
 						</div>
 						<div className='flex'>
 							{/* case 1 */}
-							<div className='mr-2 items-start mt-2 text-white'>
-								<div className='flex flex-wrap items-center gap-y-4'>
-									<div className='font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer'>
-										Case 1
+							{problem.examples.map((example, index) => (
+								<div
+									className='mr-2 items-start mt-2 '
+									key={example.id}
+									onClick={() => {
+										setActiveTestCase(index);
+									}}
+								>
+									<div className='flex flex-wrap items-center gap-y-4'>
+										<div
+											className={`font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer ${
+												index === activeTestCase
+													? ' bg-dark-fill-3 hover:bg-dark-fill-2 text-white'
+													: ' bg-transparent hover:bg-dark-fill-2 text-gray-400'
+											}`}
+										>
+											Case {index + 1}
+										</div>
 									</div>
 								</div>
-							</div>
-							{/* case 2 */}
-							<div className='mr-2 items-start mt-2 text-white'>
-								<div className='flex flex-wrap items-center gap-y-4'>
-									<div className='font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer'>
-										Case 2
-									</div>
-								</div>
-							</div>
-							{/* case 3 */}
-							<div className='mr-2 items-start mt-2 text-white'>
-								<div className='flex flex-wrap items-center gap-y-4'>
-									<div className='font-medium items-center transition-all focus:outline-none inline-flex bg-dark-fill-3 hover:bg-dark-fill-2 relative rounded-lg px-4 py-1 cursor-pointer'>
-										Case 3
-									</div>
-								</div>
-							</div>
+							))}
 						</div>
 						<div className='font-semibold my-4'>
 							<p className='text-sm font-medium mt-4 text-white '>Input : </p>
 							<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-								nums : [1,2,3,4,5],target: 9
+								{problem.examples[activeTestCase].inputText}
 							</div>
 							<p className='text-sm font-medium mt-4 text-white '>Output : </p>
 							<div className='w-full cursor-text rounded-lg border px-3 py-[10px] bg-dark-fill-3 border-transparent text-white mt-2'>
-								[0,1]
+								{problem.examples[activeTestCase].outputText}
 							</div>
 						</div>
 					</div>
 				</Split>
-            <EditorFooter />
+				<EditorFooter />
 			</div>
 		);
 }
