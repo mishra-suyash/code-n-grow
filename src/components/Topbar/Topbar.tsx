@@ -6,10 +6,15 @@ import Logout from '../Buttons/Logout';
 import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModalAtom';
 import Image from 'next/image';
+import ProblemPage from '@/pages/problems/[pid]';
+import ProblemListWidget from './ProblemListWidget';
+import Timer from '../Timer/Timer';
 
-type TopbarProps = {};
+type TopbarProps = {
+	problemPage?: boolean;
+};
 
-const Topbar: React.FC<TopbarProps> = () => {
+const Topbar: React.FC<TopbarProps> = ({problemPage}) => {
 	const [user, loading, error] = useAuthState(auth);
 	const setAuthModalState = useSetRecoilState(authModalState);
 	const handleSignInClick = () => {
@@ -19,11 +24,13 @@ const Topbar: React.FC<TopbarProps> = () => {
 	return (
 		<nav className='relative flex h-[50px] w-full shrink-0 items-center px-5 bg-dark-layer-1 text-dark-gray-7'>
 			<div
-				className={`flex w-full items-center justify-between max-w-[1200px] mx-auto`}
+				className={`flex w-full items-center justify-between ${!problemPage?'max-w-[1200px] mx-auto':''}`}
 			>
 				<Link href='/' className='h-[30px] flex-1'>
 					<Image src='/logo-full.png' alt='logo' width={150} height={50} />
 				</Link>
+
+				{problemPage && <ProblemListWidget />}
 
 				<div className='flex items-center space-x-4 flex-1 justify-end'>
 					<div>
@@ -36,6 +43,7 @@ const Topbar: React.FC<TopbarProps> = () => {
 							Premium
 						</a>
 					</div>
+					{problemPage?<Timer />:''}
 					{!user && (
 						<Link href='/auth' onClick={handleSignInClick}>
 							<button className='bg-dark-fill-3 py-1 px-2 cursor-pointer rounded '>
@@ -50,15 +58,21 @@ const Topbar: React.FC<TopbarProps> = () => {
 								alt='avatar'
 								className='h-8 w-8 rounded-full object-cover'
 							/> */}
-							<Image src={user.photoURL || '/avatar.png'} alt='avatar' width={32} height={32} className='rounded-full object-cover' />	
-							<div className='absolute -top-2 -right-2 w-3 h-3 rounded-full bg-green-500 border-2 border-white group-hover:bg-green-500'>I</div>
-							<div className='absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg z-40 group-hover:scale-100 scale-0 transition-all duration-300 ease-in-out'
-							>
+							<Image
+								src={user.photoURL || '/avatar.png'}
+								alt='avatar'
+								width={32}
+								height={32}
+								className='rounded-full object-cover'
+							/>
+							<div className='absolute -top-2 -right-2 w-3 h-3 rounded-full bg-green-500 border-2 border-white group-hover:bg-green-500'>
+							</div>
+							<div className='absolute top-10 left-2/4 -translate-x-2/4  mx-auto bg-dark-layer-1 text-brand-orange p-2 rounded shadow-lg z-40 group-hover:scale-100 scale-0 transition-all duration-300 ease-in-out'>
 								<p className='text-sm'>{user.email}</p>
 							</div>
 						</div>
 					)}
-					{user&&<Logout />}
+					{user && <Logout />}
 				</div>
 			</div>
 		</nav>
