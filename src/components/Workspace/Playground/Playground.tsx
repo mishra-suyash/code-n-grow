@@ -13,12 +13,19 @@ import { useRouter } from 'next/router';
 import { problems } from '@/utils/problems';
 import { set } from 'firebase/database';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 type PlaygroundProps = {
 	problem: Problem;
 	setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 	setSolved: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+export interface ISettings {
+	fontSize: string;
+	settingsModalIsOpen: boolean;
+	dropdownIsOpen: boolean;
+}
 
 const Playground: React.FC<PlaygroundProps> = ({
 	problem,
@@ -28,7 +35,16 @@ const Playground: React.FC<PlaygroundProps> = ({
 	const router = useRouter();
 	const [activeTestCase, setActiveTestCase] = useState<number>(0);
 	let [userCode, setUserCode] = useState<string>(problem.starterCode);
-	
+
+	const [fontSize, setFontSize] = useLocalStorage('editorFontSize', '16px');
+	const [settings, setSettings] = useState<ISettings>({
+		fontSize: fontSize,
+		settingsModalIsOpen: false,
+		dropdownIsOpen: false,
+	})
+
+
+
 	const [user] = useAuthState(auth);
 	const { pid } = router.query;
 
@@ -93,7 +109,7 @@ const Playground: React.FC<PlaygroundProps> = ({
 
 	return (
 		<div className='flex flex-col bg-dark-layer-1 relative overflow-x-hidden'>
-			<PreferenceNavbar />
+			<PreferenceNavbar settings={settings} setSettings={setSettings} />
 			<Split
 				className='h-[calc(100vh-94px)]'
 				direction='vertical'
@@ -105,7 +121,7 @@ const Playground: React.FC<PlaygroundProps> = ({
 						value={userCode}
 						theme={vscodeDark}
 						extensions={[javascript()]}
-						style={{ fontSize: 16 }}
+						style={{ fontSize: settings.fontSize }}
 						onChange={onChange}
 					/>
 				</div>

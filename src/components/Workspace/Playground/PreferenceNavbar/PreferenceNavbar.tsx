@@ -1,10 +1,15 @@
 import { set } from 'firebase/database';
 import React, { useEffect } from 'react';
 import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiOutlineSetting } from 'react-icons/ai';
+import { ISettings } from '../Playground';
+import SettingsModal from '@/components/Modals/SettingsModal';
 
-type PreferenceNavbarProps = {};
+type PreferenceNavbarProps = {
+	settings: ISettings;
+	setSettings: React.Dispatch<React.SetStateAction<ISettings>>;
+};
 
-const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
+const PreferenceNavbar: React.FC<PreferenceNavbarProps> = ({setSettings,settings}) => {
 	const [isFullScreen, setIsFullScreen] = React.useState(false);
 	const handleFullScreen = () => {
 		if (document.fullscreenElement) {
@@ -14,6 +19,9 @@ const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
 			document.documentElement.requestFullscreen();
 			setIsFullScreen(true);
 		}
+	}
+	const handleSettingsClick = () => {
+		setSettings({ ...settings, settingsModalIsOpen: true });
 	}
 
 	useEffect(() => {
@@ -45,7 +53,10 @@ const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
 			</div>
 
 			<div className='flex items-center m-2'>
-				<button className=' preference-button group'>
+				<button
+					className=' preference-button group'
+					onClick={handleSettingsClick}
+				>
 					<div className='h-4 w-4 text-dark-gray-6 font-bold text-lg'>
 						<AiOutlineSetting />
 					</div>
@@ -63,6 +74,9 @@ const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
 					<div className='preference-tooltip'>Full Screen</div>
 				</button>
 			</div>
+			{settings.settingsModalIsOpen && (
+				<SettingsModal settings={settings} setSettings={setSettings} />
+			)}
 		</div>
 	);
 };
