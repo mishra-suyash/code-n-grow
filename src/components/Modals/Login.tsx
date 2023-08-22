@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModalAtom';
 import { auth } from '@/firebase/firebase';
@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 type LoginProps = {};
 
 const Login: React.FC<LoginProps> = () => {
-   const router = useRouter()
+	const router = useRouter();
 	const setAuthModalState = useSetRecoilState(authModalState);
 	const handleClick = (type: 'login' | 'register' | 'forgotPassword') => {
 		setAuthModalState((oldState) => ({ ...oldState, type: type }));
@@ -18,48 +18,59 @@ const Login: React.FC<LoginProps> = () => {
 		email: '',
 		password: '',
 	});
-   const [signInWithEmailAndPassword, user, loading, error] =
-			useSignInWithEmailAndPassword(auth);
+	const [signInWithEmailAndPassword, user, loading, error] =
+		useSignInWithEmailAndPassword(auth);
 	const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
-   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if(!inputs.email || !inputs.password) return toast.warning('Please fill all the fields', {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		if (!inputs.email || !inputs.password)
+			return toast.warning('Please fill all the fields', {
 				position: 'top-center',
 				autoClose: 3000,
 				theme: 'dark',
 			});
-      const { email, password } = inputs;
-      try {
-				toast.loading('Signing In...', {
-					position: 'top-center',
-					theme: 'dark',
-					toastId: 'loadingToast',
-				});
+		const { email, password } = inputs;
+		try {
+			toast.loading('Signing In...', {
+				position: 'top-center',
+				theme: 'dark',
+				toastId: 'loadingToast',
+			});
 
-				const user = await signInWithEmailAndPassword(email, password);
-				if (!user) return;
-				router.push('/');
-			} catch (error: any) {
-				toast.error(error.message, {
-					position: 'top-center',
-					autoClose: 3000,
-					theme: 'dark',
-				});
-			} finally {
-				toast.dismiss('loadingToast');
-			}
-   }
-   useEffect(() => {
-      if(error){
-         toast.error(error.message, {
-						position: 'top-center',
-						autoClose: 3000,
-						theme: 'dark',
-					});
-      }
-   },[error])
+			const user = await signInWithEmailAndPassword(email, password);
+			if (!user) return;
+			router.push('/');
+		} catch (error: any) {
+			const errorMsg = error.message.startsWith(
+				'Firebase: Error (auth/wrong-password).'
+			)
+				? 'Wrong Password'
+				: 'Something Went Wrong';
+			toast.error(errorMsg, {
+				position: 'top-center',
+				autoClose: 3000,
+				theme: 'dark',
+			});
+		} finally {
+			toast.dismiss('loadingToast');
+		}
+	};
+	useEffect(() => {
+		if (error) {
+			const errorMsg = error.message.startsWith(
+				'Firebase: Error (auth/wrong-password).'
+			)
+				? 'Wrong Password'
+				: 'Something Went Wrong';
+			toast.error(errorMsg, {
+				position: 'top-center',
+				autoClose: 3000,
+				theme: 'dark',
+			});
+		}
+	}, [error]);
 	return (
 		<form action='' className='space-y-6 px-6 py-4' onSubmit={handleSubmit}>
 			<h3 className='text-xl font-medium text-white'>
@@ -101,7 +112,7 @@ const Login: React.FC<LoginProps> = () => {
 				type='submit'
 				className='w-full text-white focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-brand-orange-s '
 			>
-				{loading?'Loading...':'Sign In'}
+				{loading ? 'Loading...' : 'Sign In'}
 			</button>
 			<button className='flex w-full justify-end'>
 				<a
