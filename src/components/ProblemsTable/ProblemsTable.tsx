@@ -21,7 +21,7 @@ type ProblemsTableProps = {
 };
 
 const ProblemsTable: React.FC<ProblemsTableProps> = ({
-	setLoadingProblems,
+	setLoadingProblems
 }) => {
 	const [youtubePlayer, setYoutubePlayer] = useState({
 		isOpen: false,
@@ -47,7 +47,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
 		<>
 			<tbody className='text-white'>
 				{problems.map((problem, idx) => {
-					const difficulyColor =
+					const difficultyColor =
 						problem.difficulty === 'Easy'
 							? 'text-dark-green-s'
 							: problem.difficulty === 'Medium'
@@ -81,7 +81,7 @@ const ProblemsTable: React.FC<ProblemsTableProps> = ({
 									</Link>
 								)}
 							</td>
-							<td className={`px-6 py-4 ${difficulyColor}`}>
+							<td className={`px-6 py-4 ${difficultyColor}`}>
 								{problem.difficulty}
 							</td>
 							<td className={'px-6 py-4'}>{problem.category}</td>
