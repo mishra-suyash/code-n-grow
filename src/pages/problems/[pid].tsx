@@ -5,12 +5,16 @@ import { problems } from '@/utils/problems';
 import { DBProblem, Problem } from '@/utils/types/problem';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '@/firebase/firebase';
+import useHasMounted from '@/hooks/useHasMounted';
 
 type ProblemPageProps = {
 	problem: Problem;
 };
 
 const ProblemPage: React.FC<ProblemPageProps> = ({ problem }) => {
+	const hasMounted = useHasMounted();
+
+	if (!hasMounted) return null;
 
 	return (
 		<div>

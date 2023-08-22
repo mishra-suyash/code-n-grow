@@ -1,9 +1,37 @@
-import React from 'react';
-import { AiOutlineFullscreen, AiOutlineSetting } from 'react-icons/ai';
+import { set } from 'firebase/database';
+import React, { useEffect } from 'react';
+import { AiOutlineFullscreen, AiOutlineFullscreenExit, AiOutlineSetting } from 'react-icons/ai';
 
 type PreferenceNavbarProps = {};
 
 const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
+	const [isFullScreen, setIsFullScreen] = React.useState(false);
+	const handleFullScreen = () => {
+		if (document.fullscreenElement) {
+			document.exitFullscreen();
+			setIsFullScreen(false);
+		} else {
+			document.documentElement.requestFullscreen();
+			setIsFullScreen(true);
+		}
+	}
+
+	useEffect(() => {
+		function exitHandler() {
+			if (!document.fullscreenElement) {
+				setIsFullScreen(false);
+				return;
+			}
+			setIsFullScreen(true);
+		}
+		if(document.addEventListener){
+			document.addEventListener('fullscreenchange', exitHandler);
+			document.addEventListener('webkitfullscreenchange', exitHandler);
+			document.addEventListener('mozfullscreenchange', exitHandler);
+			document.addEventListener('MSFullscreenChange', exitHandler);
+		}
+	},[isFullScreen])
+
 	return (
 		<div className='flex items-center justify-between bg-dark-layer-2 h-11 w-full'>
 			<div className='flex items-center text-white pl-3'>
@@ -24,9 +52,13 @@ const PreferenceNavbar: React.FC<PreferenceNavbarProps> = () => {
 					<div className='preference-tooltip'>Settings</div>
 				</button>
 
-				<button className='preference-button group'>
+				<button className='preference-button group' onClick={handleFullScreen}>
 					<div className='h-4 w-4 text-dark-gray-6 font-bold text-lg'>
-						<AiOutlineFullscreen />
+						{!isFullScreen ? (
+							<AiOutlineFullscreen />
+						) : (
+							<AiOutlineFullscreenExit />
+						)}
 					</div>
 					<div className='preference-tooltip'>Full Screen</div>
 				</button>
