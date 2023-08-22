@@ -37,7 +37,7 @@ const ProblemListWidget:React.FC<ProblemListWidgetProps> = () => {
 
 
    return (
-			<div className='flex items-center gap-4 justify-center '>
+			<div className=' items-center gap-4 justify-center hidden md:flex'>
 				<div
 					className='flex items-center justify-center rounded bg-dark-fill-3 hover:bg-dark-fill-2 h-8 w-8 cursor-pointer p-2'
 					onClick={() => handleProblemChange(false)}
