@@ -6,16 +6,61 @@ import {vscodeDark} from '@uiw/codemirror-theme-vscode';
 import {javascript} from '@codemirror/lang-javascript';
 import EditorFooter from './EditorFooter/EditorFooter';
 import { Problem } from '@/utils/types/problem';
+import { toast } from 'react-toastify';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, firestore } from '@/firebase/firebase';
+import { useRouter } from 'next/router';
+import { problems } from '@/utils/problems';
+import { set } from 'firebase/database';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 
 
 type PlaygroundProps = {
-   problem:Problem
+   problem:Problem,
+	setSuccess:React.Dispatch<React.SetStateAction<boolean>>,
+	setSolved:React.Dispatch<React.SetStateAction<boolean>>
 };
 
-const Playground:React.FC<PlaygroundProps> = ({problem}) => {
+const Playground:React.FC<PlaygroundProps> = ({problem,setSuccess,setSolved}) => {
+	const router = useRouter();
 	const [activeTestCase, setActiveTestCase] = React.useState<number>(0);
-   const boilerPlateCode = problem.starterCode;
+	const [userCode, setUserCode] = React.useState<string>(problem.starterCode);
+	const [user] = useAuthState(auth);
+	const {pid} = router.query;
 
+	const handleSubmit = async () => {
+		if(!user){
+			toast.error('Please, Login to Submit Your Code',{autoClose:3000,position:'top-center',theme:'dark'});
+			return;
+		}
+		try {
+			const cb = new Function(`return ${userCode}`)();
+			const success = problems[pid as string].handlerFunction(cb);
+			if(success){
+				toast.success('Congratulations! All Test Cases Passed. You have solved it',{autoClose:3000,position:'top-center',theme:'dark'});
+				setSuccess(true);
+				setTimeout(() => {
+					setSuccess(false);
+				},4000)
+				const userRef = doc(firestore,`users/${user.uid}`);
+				await updateDoc(userRef,{
+					solvedProblems:arrayUnion(pid)
+				})
+				setSolved(true);
+			}
+		} catch (error:any) {
+			const errorMsg = error.message.startsWith(
+				'AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:'
+			)
+				? 'Oops! One or more test cases have Failed'
+				: 'Something went wrong';
+			toast.error(errorMsg,{autoClose:3000,position:'top-center',theme:'dark'});
+		}
+	};
+
+	const onChange =(value:string)=>{
+		setUserCode(value);
+	}
 
    return (
 			<div className='flex flex-col bg-dark-layer-1 relative overflow-x-hidden'>
@@ -28,10 +73,12 @@ const Playground:React.FC<PlaygroundProps> = ({problem}) => {
 				>
 					<div className='w-full overflow-auto'>
 						<CodeMirror
-							value={boilerPlateCode}
+							value={userCode}
 							theme={vscodeDark}
 							extensions={[javascript()]}
 							style={{ fontSize: 16 }}
+							onChange={onChange}
+							
 						/>
 					</div>
 					<div className='w-full px-5 overflow-auto '>
@@ -79,7 +126,7 @@ const Playground:React.FC<PlaygroundProps> = ({problem}) => {
 						</div>
 					</div>
 				</Split>
-				<EditorFooter />
+				<EditorFooter handleSubmit={handleSubmit} />
 			</div>
 		);
 }
