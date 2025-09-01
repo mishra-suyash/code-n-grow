@@ -6,7 +6,7 @@ const starterCodeTwoSum = `/**
  * @param {number} target
  * @return {number[]}
  */
-var twoSum = function(nums, target) {
+function twoSum(nums, target) {
     
 };`;
 
